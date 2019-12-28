@@ -1,7 +1,8 @@
 <script>
 	export let buttonName = 'BUTTON';
+	export let onclick = ()=> console.log('not yet implemented');
 </script>
-<button>
+<button on:click={onclick}>
 	{buttonName}
 </button>
 <style>
