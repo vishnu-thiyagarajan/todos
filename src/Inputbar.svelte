@@ -2,11 +2,12 @@
 	export let inputName = 'search'
 	export let inputid = 'input'
 	export let inputdisp = 'hidden'
+	
 </script>
 <div style="visibility:{inputdisp}" id='inputbar'>
   <input id={inputid} type="{inputName}"
   placeholder="{inputName == 'text' ? 'List Name': 'Search...'}" 
-  onkeyup={inputName == 'text' ? 'AddList(event)': 'searchList(event)'} ally-autofocus />
+  onkeyup={inputName == 'text' ? 'AddList(event)': 'searchList(event)'} />
 </div>
 <style>
 	#inputbar{

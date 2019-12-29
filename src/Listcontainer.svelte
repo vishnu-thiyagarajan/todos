@@ -1,31 +1,17 @@
 <script>
 	//import Button from './Button.svelte'
+	import { toDoObj } from './store.js'
 	function selectItem(event){
 		let itemStyle = event.target.style
 		itemStyle.backgroundColor = itemStyle.backgroundColor === "grey" ? 'white': 'grey'
 	}
 </script>
 <div class='container' id='listcontainer'>
+{#each $toDoObj as todo}
 	<div class='item' on:click={selectItem}>
-		test<br>
-		test<br>
-		test<br>
-		test<br>
+		{todo.listname}
 	</div>
-	<div class='item' on:click={selectItem}>
-		test<br>
-		test<br>
-		test<br>
-		test<br>
-		test<br>
-		
-	</div>
-	<div class='item' on:click={selectItem}>
-		test
-	</div>
-	<div class='item' on:click={selectItem}>
-		test
-	</div>
+{/each}
 </div>
 <style>
 	.container {
