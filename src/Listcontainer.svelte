@@ -1,5 +1,8 @@
 <script>
-	import { toDoObj,rename } from './store.js'
+  import { toDoObj,rename } from './store.js'
+  function openList(event){
+    console.log(event.target.id)
+  }
 	function selectItem(event){
     toDoObj.update(list => {
       let todos = [...list]
@@ -28,7 +31,7 @@
 {#each $toDoObj as todo}
   {#if todo.display}
     <div class='innercontainer'>
-      <div id={todo.id} class='item' class:selected={todo.selected} on:click={selectItem}>
+      <div id={todo.id} class='item' class:selected={todo.selected} on:click={selectItem} on:dblclick={openList}>
       no tasks
       </div>
       {#if $rename && todo.selected}
