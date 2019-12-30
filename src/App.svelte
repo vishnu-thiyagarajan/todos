@@ -13,7 +13,7 @@
 <Taskbar firstButtonName='Rename' secondButtonName='Delete'/>
 <!--<Taskbar firstButtonName='Done' position = 'bottom'/>-->
 </div>
-{$toDoObj}
+
 <style>
 #mainGrid{
 	display: grid;

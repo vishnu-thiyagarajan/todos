@@ -3,18 +3,28 @@
 	import Button from './Button.svelte'
 	import Links from './Links.svelte'
 	let newListVisible = false, searchVisible = false , listname = '', searchName = ''
-	const focus = node => node.focus()
+	const focus = event => event.focus()
 	const onNewList = ()=>{searchVisible = false; newListVisible = newListVisible ? false : true}
 	const onSearch = ()=>{newListVisible = false; searchVisible = searchVisible ? false : true}
-	function addList(node){
-		if(node.code!='Enter') return
+	function addList(event){
+		if(event.code!='Enter') return
 		toDoObj.update(list => [...list, {'id':list.length?list[list.length-1]['id']+1:0,
-								listname:listname}])
+								listname:listname,
+								selected:false,
+								display:true}])
 		listname = ''
 	}
-	function searchList(node){
-		console.log(searchName)
-		if(node.code=='Enter') searchName = ''
+	function searchList(event){
+		if (!searchVisible) return
+		toDoObj.update(list =>{
+			let todos = [...list]
+			for (let todo of todos){
+				if (!todo.listname.toLowerCase().includes(searchName.toLowerCase())) todo.display=false
+				if (searchName == '') todo.display=true
+			}
+			return todos
+		})
+		if(event.code=='Enter') searchName = ''
 	}
 </script>
 <div id='navbar'>
@@ -52,6 +62,7 @@
         justify-items: center;
         grid-template-columns: 1fr;
 		width: 98.75%;
+		padding-top: 10px;
 		position: fixed;
 		margin-top: 30px;
 	}
