@@ -16,7 +16,6 @@
 	<div id="mainGrid">
 	<Taskbar firstButtonName='Back' secondButtonName='Clear Done' position = 'top'/>
 	<Taskcontainer/>
-	<Taskbar firstButtonName='Done' position = 'bottom'/>
 	</div>
 {/if}
 <style>
