@@ -7,7 +7,7 @@
 	export let position = 'bottom'
 	let deleteList = ()=>{toDoObj.update(list =>[...list].filter(item=>!item.selected))}
 	let renameList = ()=>{rename.update(value=>!value)}
-	let goBack = ()=>activeSection.update(n=>0)
+	let goBack = ()=>activeSection.update(n=>'Lists')
 	let clearDone = ()=>console.log('not yet implemented')
 </script>
 <div id='navbar' style='{position}:0;grid-template-columns:{secondButtonName === '' ? '8fr' : '1fr 6fr 1fr' }'>

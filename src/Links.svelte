@@ -1,15 +1,13 @@
 <script>
-	import Button from './Button.svelte'
 	import { activeSection } from './store.js'
 	function activeLists(event){
-		const refObj = {'Lists':0,'Today':1,'Scheduled':2}
-		activeSection.update(n=>refObj[event.target.innerText])
+		activeSection.update(n=>event.target.innerText)
 	}
 </script>
 <div id='buttongroup'>
-<button on:click={activeLists} class:active={$activeSection==0}>Lists</button>
-<button on:click={activeLists} class:active={$activeSection==1}>Today</button>
-<button on:click={activeLists} class:active={$activeSection==2}>Scheduled</button>
+<button on:click={activeLists} class:active={$activeSection=='Lists'}>Lists</button>
+<button on:click={activeLists} class:active={$activeSection=='Today'}>Today</button>
+<button on:click={activeLists} class:active={$activeSection=='Scheduled'}>Scheduled</button>
 </div>
 <style>
 	#buttongroup{

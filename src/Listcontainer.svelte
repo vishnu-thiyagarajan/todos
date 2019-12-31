@@ -1,7 +1,7 @@
 <script>
-  import { toDoObj,rename } from './store.js'
+  import { toDoObj, rename, activeSection } from './store.js'
   function openList(event){
-    console.log(event.target.id)
+    activeSection.update(n=>event.target.id)
   }
 	function selectItem(event){
     toDoObj.update(list => {
