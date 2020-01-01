@@ -1,13 +1,20 @@
 <script>
-  import { toDoObj, rename, activeSection } from './store.js'
+  import { toDoObj, activeSection } from './store.js'
+	import Navbar from './Listnavbar.svelte'
+  import Taskbar from './Tasknavbar.svelte'
+  import Task from './Task.svelte'
+  let rename = false
+  function toggleRename(){rename=!rename}
   function openList(event){
-    activeSection.update(n=>event.target.id)
+    let id = event.target.id || event.target.parentNode.id
+    activeSection.update(n=>id)
   }
 	function selectItem(event){
+    let id = event.target.id || event.target.parentNode.id
     toDoObj.update(list => {
       let todos = [...list]
       for (let todo of todos){
-        if (todo.id == event.target.id) todo.selected = todo.selected == true ? false : true
+        if (todo.id == id) todo.selected = todo.selected == true ? false : true
       }
       return todos
     })
@@ -24,17 +31,17 @@
       }
       return todos
     })
-    rename.update(value=>!value)
   }
 </script>
+<Navbar/>
 <div class='container' id='listcontainer'>
 {#each $toDoObj as todo}
   {#if todo.display}
     <div class='innercontainer'>
       <div id={todo.id} class='item' class:selected={todo.selected} on:click={selectItem} on:dblclick={openList}>
-      no tasks
+      <Task listid={todo.id}/>
       </div>
-      {#if $rename && todo.selected}
+      {#if rename && todo.selected}
         <input type="text" value={todo.listname} on:keyup={renameList}/>
       {:else}
         <p>{todo.listname}</p>
@@ -43,6 +50,7 @@
   {/if}
 {/each}
 </div>
+<Taskbar firstButtonName='Rename' secondButtonName='Delete' onRename={toggleRename}/>
 <style>
 .container {
 	margin:50px;

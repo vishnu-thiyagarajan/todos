@@ -5,16 +5,23 @@
 	import Taskcontainer from './Taskcontainer.svelte'
 	import Listcontainer from './Listcontainer.svelte'
 </script>
-{#if $activeSection=='Lists' }
+{#if $activeSection==='Lists' }
 	<div id="mainGrid">
-	<Navbar/>
 	<Listcontainer />
-	<Taskbar firstButtonName='Rename' secondButtonName='Delete'/>
 	</div>
 {/if}
-{#if $activeSection!='Lists' }
+{#if $activeSection==='Today' }
 	<div id="mainGrid">
-	<Taskbar firstButtonName='Back' secondButtonName='Clear Done' position = 'top'/>
+	<Taskcontainer/>
+	</div>
+{/if}
+{#if $activeSection==='Scheduled' }
+	<div id="mainGrid">
+	<Taskcontainer/>
+	</div>
+{/if}
+{#if !isNaN(parseInt($activeSection)) }
+	<div id="mainGrid">
 	<Taskcontainer/>
 	</div>
 {/if}

@@ -1,14 +1,19 @@
 <script>
-    import { activeSection, taskObj } from './store.js';
+    import { toDoObj, activeSection, taskObj } from './store.js';
     import Button from './Button.svelte'
 	import Taskbar from './Tasknavbar.svelte'
-    let addTaskFlag = false;
+    let addTaskFlag = false, showDone=false;
     let newTaskName='';
     const toggleAddTask = ()=>addTaskFlag = !addTaskFlag
     const focus = event => event.focus()
     let editableTask=NaN;
     let doneCount = 0;
-    for (let task of $taskObj){if (task.completed) doneCount++}
+    const toggleDone = ()=>{showDone=!showDone}
+    for (let task of $taskObj){if (checkCond(task) && task.completed) doneCount++}
+    function clearDone(){
+		taskObj.update((tasks)=>tasks.filter((item)=> checkCond(item) ? !item.completed : item.completed))
+        doneCount = 0
+    }
     function showDoneButton(event){
         if(event.target.checked) doneCount++
         if(!event.target.checked) doneCount--
@@ -33,20 +38,34 @@
     function deleteTask(event){
 		taskObj.update(tasks => tasks.filter((item)=>item.id!==parseInt(editableTask)))
         editableTask = NaN
-	}
+    }
+    function checkCond(task){
+        if ($activeSection==='Today') { return task.duedate===new Date().toISOString().slice(0,10) ? true:false}
+        if ($activeSection==='Scheduled') return task.duedate !== '' ? true : false
+        return task.listid===parseInt($activeSection)
+    }
+    let detailDisplay = $activeSection==='Today'|| $activeSection==='Scheduled' ? true : false
+    function getListName(id){
+        for (let list of $toDoObj){
+            if (id===list.id) return list.listname;
+        }
+    }
 </script>
-
-{#if $activeSection=='Lists' || $activeSection=='Scheduled'}
-    <p>need to implement</p>
-{:else}
+<Taskbar firstButtonName='Back' secondButtonName='Clear Done' position = 'top' onClearDone={clearDone}/>
     <div class='taskcontainer'>
         {#each $taskObj as task}
-            <div on:click={openEditTask} id={task.id} class='task'>
+            {#if checkCond(task)}
+            {#if !task.completed || showDone}
+            <div on:click={openEditTask} id={task.id} class='task' class:gridBreak={detailDisplay}>
                 <input type='checkbox' bind:checked={task.completed} checked={task.completed} on:click|stopPropagation={showDoneButton}/>
                 {#if editableTask == task.id}
                     <input type='text' in:focus bind:value={task.taskname}/>
                 {:else}
                     <p>{task.taskname}</p>
+                {/if}
+                {#if detailDisplay}
+                    <p>{task.duedate}</p>
+                    <p>{getListName(task.listid)}</p>
                 {/if}
             </div>
             {#if editableTask == task.id}
@@ -60,14 +79,17 @@
                         <option value="High">High</option>
                     </select>
                     </div>
-                <div class="duedate">Due Date:<br><input type="date" bind:value={task.date}></div>
+                <div class="duedate">Due Date:<br><input type="date" bind:value={task.duedate}></div>
                 <div class="delete">
                     <Button buttonName='Delete' onclick={deleteTask}/>
                     <Button buttonName='Close' onclick={closeEditTask}/>
                 </div>
                 </div>
             {/if}
+            {/if}
+            {/if}
         {/each}
+        {#if !isNaN(parseInt($activeSection))}
         <div class='task' style="grid-template-columns: 10fr;border:none;">
             {#if !addTaskFlag}
                 <Button buttonName = 'Add Task' onclick={toggleAddTask}/>
@@ -75,11 +97,11 @@
                 <input in:focus on:focusout={toggleAddTask} on:keyup={addTask} bind:value={newTaskName} type='text' placeholder="Task Name..."/>
             {/if}
         </div>
+        {/if}
     </div>
     {#if doneCount}
-	    <Taskbar firstButtonName='Done' position = 'bottom'/>
+	    <Taskbar firstButtonName='Done({doneCount})' position = 'bottom' onDone={toggleDone}/>
     {/if}
-{/if}
 <style>
 .taskcontainer{
     margin:50px;
@@ -96,6 +118,9 @@
     border: 2px solid black;
     display: grid;
     grid-template-columns: 1fr 9fr;
+}
+.gridBreak{
+    grid-template-columns: 1fr 5fr 2fr 2fr;
 }
 input[type='checkbox']{
     zoom:3;

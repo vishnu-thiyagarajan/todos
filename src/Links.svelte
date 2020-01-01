@@ -2,12 +2,13 @@
 	import { activeSection } from './store.js'
 	function activeLists(event){
 		activeSection.update(n=>event.target.innerText)
+		console.log($activeSection)
 	}
 </script>
 <div id='buttongroup'>
-<button on:click={activeLists} class:active={$activeSection=='Lists'}>Lists</button>
-<button on:click={activeLists} class:active={$activeSection=='Today'}>Today</button>
-<button on:click={activeLists} class:active={$activeSection=='Scheduled'}>Scheduled</button>
+<button on:click={activeLists} class:active={$activeSection==='Lists'}>Lists</button>
+<button on:click={activeLists} class:active={$activeSection==='Today'}>Today</button>
+<button on:click={activeLists} class:active={$activeSection==='Scheduled'}>Scheduled</button>
 </div>
 <style>
 	#buttongroup{

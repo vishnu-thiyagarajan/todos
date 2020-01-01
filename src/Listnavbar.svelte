@@ -7,7 +7,7 @@
 	const onNewList = ()=>{searchVisible = false; newListVisible = newListVisible ? false : true}
 	const onSearch = ()=>{newListVisible = false; searchVisible = searchVisible ? false : true}
 	function addList(event){
-		if(event.code!='Enter') return
+		if(event.code!='Enter'|| listname == '') return
 		toDoObj.update(list => [...list, {'id':list.length?list[list.length-1]['id']+1:0,
 								listname:listname,
 								selected:false,

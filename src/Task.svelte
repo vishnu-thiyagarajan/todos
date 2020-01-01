@@ -1,25 +1,26 @@
 <script>
-
-</script>
-    <div class='task'>
-        <input type='checkbox'/>
-        <p>taskname</p> 
-    </div>
-<style>
-    .task{
-    color: black;
-    height: 30px;
-    padding-bottom: 20px;
-    background-color: white;
-    border: 2px solid black;
-    display: grid;
-    grid-template-columns: 1fr 5fr 2fr 2fr;
+import { taskObj } from './store.js'
+export let listid = NaN;
+let taskInList = []
+for (let task of $taskObj){
+    if (task.listid === listid){
+        taskInList.push(task.taskname)
     }
-    input[type='checkbox']{
-    zoom:3;
-    align-self: center;
-    justify-self: center;
-    padding:0;
-    margin:0;
+}
+taskInList = taskInList.length ? taskInList : ['no tasks']
+</script>
+<div class='overflow'>
+    {#each taskInList as task}
+        {task}<br>
+    {/each}
+</div>
+<style>
+.overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 110px;
+  height: 147px;
+  position: absolute;
 }
 </style>
