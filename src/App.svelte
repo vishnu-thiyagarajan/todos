@@ -5,26 +5,20 @@
 	import Taskcontainer from './Taskcontainer.svelte'
 	import Listcontainer from './Listcontainer.svelte'
 </script>
+<div id="mainGrid">
 {#if $activeSection==='Lists' }
-	<div id="mainGrid">
 	<Listcontainer />
-	</div>
 {/if}
 {#if $activeSection==='Today' }
-	<div id="mainGrid">
 	<Taskcontainer/>
-	</div>
 {/if}
 {#if $activeSection==='Scheduled' }
-	<div id="mainGrid">
 	<Taskcontainer/>
-	</div>
 {/if}
 {#if !isNaN(parseInt($activeSection)) }
-	<div id="mainGrid">
 	<Taskcontainer/>
-	</div>
 {/if}
+</div>
 <style>
 #mainGrid{
 	display: grid;

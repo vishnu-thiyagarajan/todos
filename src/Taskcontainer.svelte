@@ -81,8 +81,8 @@
                     </div>
                 <div class="duedate">Due Date:<br><input type="date" bind:value={task.duedate}></div>
                 <div class="delete">
-                    <Button buttonName='Delete' onclick={deleteTask}/>
-                    <Button buttonName='Close' onclick={closeEditTask}/>
+                    <Button buttonName='Delete' on:click={deleteTask}/>
+                    <Button buttonName='Close' on:click={closeEditTask}/>
                 </div>
                 </div>
             {/if}
@@ -92,7 +92,7 @@
         {#if !isNaN(parseInt($activeSection))}
         <div class='task' style="grid-template-columns: 10fr;border:none;">
             {#if !addTaskFlag}
-                <Button buttonName = 'Add Task' onclick={toggleAddTask}/>
+                <Button buttonName = 'Add Task' on:click={toggleAddTask}/>
             {:else}
                 <input in:focus on:focusout={toggleAddTask} on:keyup={addTask} bind:value={newTaskName} type='text' placeholder="Task Name..."/>
             {/if}

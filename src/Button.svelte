@@ -1,6 +1,12 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+	function onclick(event) {
+		dispatch('click', {
+			event: event
+		});
+	}
 	export let buttonName = 'BUTTON';
-	export let onclick = ()=> console.log('not yet implemented');
 </script>
 <button on:click={onclick}>
 	{buttonName}

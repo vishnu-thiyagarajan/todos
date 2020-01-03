@@ -2,7 +2,6 @@
 	import { activeSection } from './store.js'
 	function activeLists(event){
 		activeSection.update(n=>event.target.innerText)
-		console.log($activeSection)
 	}
 </script>
 <div id='buttongroup'>

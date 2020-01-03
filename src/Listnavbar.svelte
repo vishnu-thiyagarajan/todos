@@ -4,8 +4,8 @@
 	import Links from './Links.svelte'
 	let newListVisible = false, searchVisible = false , listname = '', searchName = ''
 	const focus = event => event.focus()
-	const onNewList = ()=>{searchVisible = false; newListVisible = newListVisible ? false : true}
-	const onSearch = ()=>{newListVisible = false; searchVisible = searchVisible ? false : true}
+	const onNewList = (event)=>{searchVisible = false; newListVisible = !newListVisible }
+	const onSearch = ()=>{newListVisible = false; searchVisible = !searchVisible }
 	function addList(event){
 		if(event.code!='Enter'|| listname == '') return
 		toDoObj.update(list => [...list, {'id':list.length?list[list.length-1]['id']+1:0,
@@ -28,9 +28,9 @@
 	}
 </script>
 <div id='navbar'>
-<Button buttonName="NewList" onclick={onNewList} />
+<Button buttonName="NewList" on:click={onNewList} />
 	<Links />
-<Button buttonName="Search" onclick={onSearch}/>
+<Button buttonName="Search" on:click={onSearch}/>
 </div>
 {#if newListVisible}
 <div id='inputbar'>

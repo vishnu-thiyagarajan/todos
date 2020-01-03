@@ -14,15 +14,15 @@
 </script>
 <div id='navbar' style='{position}:0;grid-template-columns:{secondButtonName === '' ? '8fr' : '1fr 6fr 1fr' }'>
 	{#if secondButtonName == ''}
-	<Button buttonName={firstButtonName} onclick={onDone}/>
+	<Button buttonName={firstButtonName} on:click={onDone}/>
 	{:else}
-	<Button buttonName={firstButtonName} onclick={firstButtonName=='Back'?goBack:onRename}/>
+	<Button buttonName={firstButtonName} on:click={firstButtonName=='Back'?goBack:onRename}/>
 	{#if position=='top' && isNaN(parseInt($activeSection))}
 		<Links/>
 		{:else}
 		<div></div>
 	{/if}
-	<Button buttonName={secondButtonName} onclick={secondButtonName=='Delete'?deleteList:onClearDone}/>
+	<Button buttonName={secondButtonName} on:click={secondButtonName=='Delete'?deleteList:onClearDone}/>
 	{/if}
 </div>
 <style>

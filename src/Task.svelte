@@ -1,18 +1,9 @@
 <script>
-import { taskObj } from './store.js'
-export let listid = NaN;
-let taskInList = []
-for (let task of $taskObj){
-    if (task.listid === listid){
-        taskInList.push(task.taskname)
-    }
-}
-taskInList = taskInList.length ? taskInList : ['no tasks']
 </script>
 <div class='overflow'>
-    {#each taskInList as task}
-        {task}<br>
-    {/each}
+    <slot>
+        <em>no tasks</em>
+    </slot>
 </div>
 <style>
 .overflow {

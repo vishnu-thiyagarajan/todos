@@ -1,5 +1,5 @@
 <script>
-  import { toDoObj, activeSection } from './store.js'
+  import { toDoObj, taskObj, activeSection } from './store.js'
 	import Navbar from './Listnavbar.svelte'
   import Taskbar from './Tasknavbar.svelte'
   import Task from './Task.svelte'
@@ -32,6 +32,15 @@
       return todos
     })
   }
+  function getTasks(listid){
+    let taskInList = []
+    for (let task of $taskObj){
+      if (task.listid === listid){
+          taskInList.push(task.taskname)
+      }
+    }
+    return taskInList
+  }
 </script>
 <Navbar/>
 <div class='container' id='listcontainer'>
@@ -39,7 +48,15 @@
   {#if todo.display}
     <div class='innercontainer'>
       <div id={todo.id} class='item' class:selected={todo.selected} on:click={selectItem} on:dblclick={openList}>
-      <Task listid={todo.id}/>
+      {#if getTasks(todo.id).length}
+        <Task>
+          {#each getTasks(todo.id) as taskname}
+            {taskname}<br>
+          {/each}
+        </Task>
+      {:else}
+        <Task/>
+      {/if}
       </div>
       {#if rename && todo.selected}
         <input type="text" value={todo.listname} on:keyup={renameList}/>
