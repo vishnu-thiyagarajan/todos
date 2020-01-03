@@ -24,6 +24,7 @@
     taskObj.update(tasks =>
       tasks.filter(item => checkCond(item) && item.completed ? false : true)
     );
+    doneCount = countCompleted()
   }
   function showDoneButton(event) {
     if (event.target.checked) doneCount++;
