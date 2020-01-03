@@ -9,21 +9,21 @@
   const focus = event => event.focus();
   let editableTask = NaN;
   let doneCount = 0
+  $:$activeSection,doneCount = countCompleted()
   const toggleDone = () => {
     showDone = !showDone;
   };
   function countCompleted(){
-    doneCount = 0
+    let doneCount = 0
     for (let task of $taskObj) {
         if (checkCond(task) && task.completed) doneCount++;
     }
-    return true
+    return doneCount
   }
   function clearDone() {
     taskObj.update(tasks =>
-      tasks.filter(item => (checkCond(item) ? !item.completed : item.completed))
+      tasks.filter(item => checkCond(item) && item.completed ? false : true)
     );
-    doneCount = 0;
   }
   function showDoneButton(event) {
     if (event.target.checked) doneCount++;
@@ -63,7 +63,7 @@
         : false;
     }
     if ($activeSection === "Scheduled")
-      return task.duedate !== "" ? true : false;
+      return task.duedate ? true : false;
     return task.listid === parseInt($activeSection);
   }
   let detailDisplay =
@@ -151,7 +151,7 @@
   onClearDone={clearDone} />
 <div class="taskcontainer">
   {#each $taskObj as task}
-    {#if checkCond(task) && $activeSection && countCompleted()}
+    {#if checkCond(task) && $activeSection}
       {#if !task.completed || showDone}
         <div
           on:click={openEditTask}
