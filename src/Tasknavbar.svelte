@@ -8,10 +8,10 @@
   import Button from "./Button.svelte";
   import Links from "./Links.svelte";
   export let position = "bottom";
-  let deleteList = () => {
+  const deleteList = () => {
     toDoObj.update(list => list.filter(item => !item.selected));
   };
-  let goBack = () => activeSection.update(n => "Lists");
+  const goBack = () => activeSection.update(n => "Lists");
 </script>
 
 <style>
