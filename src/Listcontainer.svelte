@@ -1,9 +1,11 @@
 <script>
   import { toDoObj, taskObj, activeSection } from "./store.js";
+  import { onMount } from "svelte";
   import Navbar from "./Listnavbar.svelte";
   import Taskbar from "./Tasknavbar.svelte";
   import Task from "./Task.svelte";
   let rename = false;
+  let promise = setTasks();
   function toggleRename() {
     rename = !rename;
   }
@@ -21,18 +23,34 @@
       return todos;
     });
   }
-  function renameList(event) {
-    if (event.code != "Enter") return;
-    toDoObj.update(list => {
-      let todos = [...list];
+  async function renameList(event) {
+    if (event.code !== "Enter") return;
+    let renameId
+    toDoObj.update(todos => {
       for (let todo of todos) {
         if (todo.id == event.target.parentNode.firstChild.id) {
+          renameId = todo.id
           todo.listname = event.target.value;
           todo.selected = false;
         }
       }
       return todos;
     });
+    const res = await window.fetch(`http://localhost:8000/addlist/${renameId}/${event.target.value}`, {
+    method: 'POST',
+    body: {},
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+      }
+    })
+  }
+  async function setTasks(){
+    const response = await fetch('http://localhost:8000/gettask');
+    const json = await response.json();
+    taskObj.update(list=>json)
+    if (response.ok) return json;
+		throw new Error(json);
   }
   function getTasks(listid) {
     let taskInList = [];
@@ -101,16 +119,22 @@
           class:selected={todo.selected}
           on:click={selectItem}
           on:dblclick={openList}>
-          {#if getTasks(todo.id).length}
+          {#await promise}
+            <p>...waiting</p>
+          {:then number}
+            {#if getTasks(todo.id).length}
             <Task>
               {#each getTasks(todo.id) as taskname}
                 {taskname}
                 <br />
               {/each}
             </Task>
-          {:else}
-            <Task />
-          {/if}
+            {:else}
+              <Task />
+            {/if}
+          {:catch error}
+            <p style="color: red">{error.message}</p>
+          {/await}
         </div>
         {#if rename && todo.selected}
           <input type="text" value={todo.listname} on:keyup={renameList} />

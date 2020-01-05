@@ -15,17 +15,28 @@
     newListVisible = false;
     searchVisible = !searchVisible;
   };
-  function addList(event) {
+  async function addList(event) {
     if (event.code != "Enter" || listname == "") return;
-    toDoObj.update(list => [
+    let listid
+    toDoObj.update(list =>{
+      listid = list.length ? parseInt(list[list.length - 1]["id"]) + 1 : 0
+      return [
       ...list,
       {
-        id: list.length ? list[list.length - 1]["id"] + 1 : 0,
+        id: listid,
         listname: listname,
         selected: false,
         display: true
       }
-    ]);
+    ]});
+    const response = await window.fetch(`http://localhost:8000/addlist/${listid}/${listname}`, {
+    method: 'POST',
+    body: {},
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  })
     listname = "";
   }
   function searchList(event) {

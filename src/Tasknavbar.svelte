@@ -8,8 +8,19 @@
   import Button from "./Button.svelte";
   import Links from "./Links.svelte";
   export let position = "bottom";
-  const deleteList = () => {
-    toDoObj.update(list => list.filter(item => !item.selected));
+  const deleteList = async () => {
+    let deleteIds = []
+    toDoObj.update(list => list.filter(item =>{
+      if (item.selected) deleteIds.push(item.id)
+      return !item.selected}));
+    const response = await window.fetch(`http://localhost:8000/deletelist/${deleteIds.join(',')}`, {
+    method: 'DELETE',
+    body: {},
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+      }
+    })
   };
   const goBack = () => activeSection.update(n => "Lists");
 </script>

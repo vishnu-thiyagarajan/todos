@@ -1,19 +1,20 @@
 const express = require('express')
 const redis = require('redis')
 const fetch = require('node-fetch')
+var cors = require('cors')
 
-const PORT = 3000
+const PORT = 8000
 const REDIS_PORT = 6379
 
 const client = redis.createClient(REDIS_PORT)
 client.on('connect', () => console.log('connected'))
 client.on('error', err => console.log('Something went wrong ' + err))
 const app = express()
-
+app.use(cors())
 function createList (req, res, next) {
   try {
     const { listid, listname } = req.params
-    client.hsetnx('list', listid, listname)
+    client.hset('list', listid, listname)
     res.status(200).send('list created successfully')
   } catch (err) {
     console.log(err)
@@ -80,7 +81,7 @@ function getTask (req, res, next) {
     if (data === null) res.send('null')
     const structuredData = []
     for (const id of data) {
-      const response = await fetch(`http://localhost:3000/gettaskdata/${id}`)
+      const response = await fetch(`http://localhost:8000/gettaskdata/${id}`)
       const result = await response.json()
       structuredData.push(result)
     }
@@ -101,15 +102,17 @@ function deleteTask (req, res, next) {
     res.status(500)
   }
 }
-
-app.get('/addlist/:listid/:listname', createList)
+app.post('/addlist/:listid/:listname', createList)
 app.get('/getlist', getList)
-app.get('/deletelist/:listid', deleteList)
-app.get('/addtask/:id/:name/:notes/:priority/:date/:done/:listid', createTask)
-app.get('/updatetask/:id/:name/:notes/:priority/:date/:done/:listid', updateTask)
+app.delete('/deletelist/:listid', deleteList)
+app.post('/addtask/:id/:name/:notes/:priority/:date/:done/:listid', createTask)
+app.put('/updatetask/:id/:name/:notes/:priority/:date/:done/:listid', updateTask)
 app.get('/gettaskdata/:id', getTaskData)
 app.get('/gettask', getTask)
-app.get('/deletetask/:id', deleteTask)
+app.delete('/deletetask/:id', deleteTask)
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
+  console.log(`App running on port ${PORT}.`)
+}).timeout = 1000
+app.use((req, res, next) => {
+  res.status(404).send('<h1>404 page not found</h1>')
 })
