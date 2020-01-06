@@ -9,9 +9,12 @@
   function toggleRename() {
     rename = !rename;
   }
-  function openList(event) {
+  async function openList(event) {
     let id = event.target.id || event.target.parentNode.id;
     activeSection.update(n => id);
+    const response = await fetch('http://localhost:8000/gettask');
+    const json = await response.json();
+    taskObj.update(list=>json)
   }
   function selectItem(event) {
     let id = event.target.id || event.target.parentNode.id;
@@ -38,7 +41,7 @@
     });
     const res = await window.fetch(`http://localhost:8000/addlist/${renameId}/${event.target.value}`, {
     method: 'POST',
-    body: {},
+    body: JSON.stringify({}),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
@@ -121,7 +124,7 @@
           on:dblclick={openList}>
           {#await promise}
             <p>...waiting</p>
-          {:then number}
+          {:then}
             {#if getTasks(todo.id).length}
             <Task>
               {#each getTasks(todo.id) as taskname}

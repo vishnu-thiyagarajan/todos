@@ -1,7 +1,8 @@
 const express = require('express')
 const redis = require('redis')
 const fetch = require('node-fetch')
-var cors = require('cors')
+const cors = require('cors')
+const bodyParser = require('body-parser')
 
 const PORT = 8000
 const REDIS_PORT = 6379
@@ -11,6 +12,19 @@ client.on('connect', () => console.log('connected'))
 client.on('error', err => console.log('Something went wrong ' + err))
 const app = express()
 app.use(cors())
+app.use(bodyParser.json())
+app.post('/addlist/:listid/:listname', createList)
+app.get('/getlist', getList)
+app.delete('/deletelist/:listid', deleteList)
+app.post('/addtask', createTask)
+app.put('/updatetask', updateTask)
+app.get('/gettaskdata/:id', getTaskData)
+app.get('/gettask', getTask)
+app.delete('/deletetask/:id', deleteTask)
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}.`)
+}).timeout = 1000
+
 function createList (req, res, next) {
   try {
     const { listid, listname } = req.params
@@ -36,7 +50,6 @@ function getList (req, res, next) {
 function deleteList (req, res, next) {
   try {
     const { listid } = req.params
-    console.log(listid.split(','))
     client.hdel('list', listid.split(','))
     res.status(200).send('list deleted successfully')
   } catch (err) {
@@ -47,9 +60,9 @@ function deleteList (req, res, next) {
 
 function createTask (req, res, next) {
   try {
-    const { id, name, notes, priority, date, done, listid } = req.params
+    const { id, taskname, notes, priority, duedate, completed, listid } = req.body
     client.rpush('task', id)
-    client.hmset(id, 'id', id, 'taskname', name, 'notes', notes, 'priority', priority, 'duedate', date, 'completed', done, 'listid', listid)
+    client.hmset(id, 'id', id, 'taskname', taskname, 'notes', notes, 'priority', priority, 'duedate', duedate, 'completed', completed, 'listid', listid)
     res.status(200).send('task created successfully')
   } catch (err) {
     console.log(err)
@@ -58,8 +71,8 @@ function createTask (req, res, next) {
 }
 function updateTask (req, res, next) {
   try {
-    const { id, name, notes, priority, date, done, listid } = req.params
-    client.hmset(id, 'id', id, 'taskname', name, 'notes', notes, 'priority', priority, 'duedate', date, 'completed', done, 'listid', listid)
+    const { id, taskname, notes, priority, duedate, completed, listid } = req.body
+    client.hmset(id, 'id', id, 'taskname', taskname, 'notes', notes, 'priority', priority, 'duedate', duedate, 'completed', completed, 'listid', listid)
     res.status(200).send('task updated successfully')
   } catch (err) {
     console.log(err)
@@ -83,6 +96,7 @@ function getTask (req, res, next) {
     for (const id of data) {
       const response = await fetch(`http://localhost:8000/gettaskdata/${id}`)
       const result = await response.json()
+      if (typeof result.completed === 'string') result.completed = String(result.completed) === 'true'
       structuredData.push(result)
     }
     res.status(200).send(structuredData)
@@ -102,17 +116,7 @@ function deleteTask (req, res, next) {
     res.status(500)
   }
 }
-app.post('/addlist/:listid/:listname', createList)
-app.get('/getlist', getList)
-app.delete('/deletelist/:listid', deleteList)
-app.post('/addtask/:id/:name/:notes/:priority/:date/:done/:listid', createTask)
-app.put('/updatetask/:id/:name/:notes/:priority/:date/:done/:listid', updateTask)
-app.get('/gettaskdata/:id', getTaskData)
-app.get('/gettask', getTask)
-app.delete('/deletetask/:id', deleteTask)
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}.`)
-}).timeout = 1000
+
 app.use((req, res, next) => {
   res.status(404).send('<h1>404 page not found</h1>')
 })

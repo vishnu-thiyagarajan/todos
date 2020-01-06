@@ -31,7 +31,7 @@
     ]});
     const response = await window.fetch(`http://localhost:8000/addlist/${listid}/${listname}`, {
     method: 'POST',
-    body: {},
+    body: JSON.stringify({}),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

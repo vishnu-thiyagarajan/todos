@@ -12,10 +12,11 @@
     let deleteIds = []
     toDoObj.update(list => list.filter(item =>{
       if (item.selected) deleteIds.push(item.id)
-      return !item.selected}));
+      return !item.selected
+      }));
     const response = await window.fetch(`http://localhost:8000/deletelist/${deleteIds.join(',')}`, {
     method: 'DELETE',
-    body: {},
+    body: JSON.stringify({}),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

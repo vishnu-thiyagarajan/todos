@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { toDoObj, activeSection } from "./store.js";
+  import { toDoObj, taskObj, activeSection } from "./store.js";
   import Taskcontainer from "./Taskcontainer.svelte";
   import Listcontainer from "./Listcontainer.svelte";
   $: component = $activeSection === "Lists" ? Listcontainer : Taskcontainer;
@@ -9,6 +9,11 @@
     const json = await response.json();
     toDoObj.update(list=>json)
   });
+  // onMount(async function() {
+  //   const response = await fetch('http://localhost:8000/gettask');
+  //   const json = await response.json();
+  //   taskObj.update(list=>json)
+  // });
 </script>
 
 <style>

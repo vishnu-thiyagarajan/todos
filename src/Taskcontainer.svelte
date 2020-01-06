@@ -20,26 +20,51 @@
     }
     return doneCount
   }
-  function clearDone() {
+  async function clearDone() {
+    let taskids = []
     taskObj.update(tasks =>
-      tasks.filter(item => checkCond(item) && item.completed ? false : true)
+      tasks.filter(item =>{ 
+        if (checkCond(item) && item.completed) { taskids.push(item.id); return false}
+        return true})
     );
-    doneCount = countCompleted()
+    const res = await window.fetch(`http://localhost:8000/deletetask/${taskids.join(',')}`, {
+    method: 'DELETE',
+    body: JSON.stringify({}),
+    headers: {
+      'Content-Type': 'application/json',
+      }
+    })
+    doneCount = 0
   }
   function showDoneButton(event) {
+    editableTask = event.target.parentNode.id
+    for (let task of $taskObj){
+      if (task.id === editableTask) task.completed = event.target.checked
+    }
+    closeEditTask()
     if (event.target.checked) doneCount++;
     if (!event.target.checked) doneCount--;
   }
   function openEditTask(event) {
     editableTask = event.target.id || event.target.parentNode.id;
   }
-  const closeEditTask = event => (editableTask = NaN);
-  function addTask(event) {
+  async function closeEditTask(){
+    let obj = $taskObj.filter(task=>task.id===editableTask)[0]
+    const res = await window.fetch('http://localhost:8000/updatetask', {
+      method: 'PUT',
+      body: JSON.stringify(obj),
+      headers: {
+        'Content-Type': 'application/json',
+        }
+      })
+    editableTask = NaN
+  };
+  async function addTask(event) {
+    let newTask = {}
     if (event.code != "Enter" || newTaskName == "") return;
-    taskObj.update(tasks => [
-      ...tasks,
-      {
-        id: tasks.length ? tasks[tasks.length - 1]["id"] + 1 : 0,
+    taskObj.update(tasks =>{ 
+      newTask = {
+        id: tasks.length ? parseInt(tasks[tasks.length - 1]["id"]) + 1 : 0,
         taskname: newTaskName,
         notes: "",
         priority: "None",
@@ -47,14 +72,30 @@
         completed: false,
         listid: parseInt($activeSection)
       }
-    ]);
+      return [...tasks, newTask]
+      });
+      const res = await window.fetch(`http://localhost:8000/addtask`, {
+      method: 'POST',
+      body: JSON.stringify(newTask),
+      headers: {
+        'Content-Type': 'application/json',
+        }
+      })
     newTaskName = "";
     addTaskFlag = false;
   }
-  function deleteTask(event) {
+  async function deleteTask(event) {
+    let taskid
     taskObj.update(tasks =>
-      tasks.filter(item => item.id !== parseInt(editableTask))
+      tasks.filter(item => {if (item.id === editableTask) taskid = item.id; return item.id !== editableTask})
     );
+    const res = await window.fetch(`http://localhost:8000/deletetask/${taskid}`, {
+    method: 'DELETE',
+    body: JSON.stringify({}),
+    headers: {
+      'Content-Type': 'application/json',
+      }
+    })
     editableTask = NaN;
   }
   function checkCond(task) {
@@ -64,8 +105,8 @@
         : false;
     }
     if ($activeSection === "Scheduled")
-      return task.duedate ? true : false;
-    return task.listid === parseInt($activeSection);
+      return task.duedate.length ? true : false;
+    return task.listid === $activeSection;
   }
   let detailDisplay =
     $activeSection === "Today" || $activeSection === "Scheduled" ? true : false;
@@ -161,7 +202,6 @@
           class:gridBreak={detailDisplay}>
           <input
             type="checkbox"
-            bind:checked={task.completed}
             checked={task.completed}
             on:click|stopPropagation={showDoneButton} />
           {#if editableTask == task.id}
