@@ -2,6 +2,7 @@
   import { toDoObj, activeSection, taskObj } from "./store.js";
   import Button from "./Button.svelte";
   import Taskbar from "./Tasknavbar.svelte";
+  $: taskObjDup = $taskObj
   let addTaskFlag = false,
     showDone = false;
   let newTaskName = "";
@@ -59,12 +60,10 @@
       })
     editableTask = NaN
   };
-  async function addTask(event) {
-    let newTask = {}
+  function addTask(event) {
     if (event.code != "Enter" || newTaskName == "") return;
-    taskObj.update(tasks =>{ 
-      newTask = {
-        id: tasks.length ? parseInt(tasks[tasks.length - 1]["id"]) + 1 : 0,
+    let newTask = {
+        id: $taskObj.length ? parseInt($taskObj[$taskObj.length - 1]["id"]) + 1 : 0,
         taskname: newTaskName,
         notes: "",
         priority: "None",
@@ -72,17 +71,19 @@
         completed: false,
         listid: parseInt($activeSection)
       }
-      return [...tasks, newTask]
-      });
-      const res = await window.fetch(`http://localhost:8000/addtask`, {
+    taskObj.update(tasks =>[...tasks, newTask])
+    createTask(newTask) 
+    newTaskName = "";
+    addTaskFlag = false;
+  }
+  async function createTask (newtask){
+    const res = await window.fetch(`http://localhost:8000/addtask`, {
       method: 'POST',
       body: JSON.stringify(newTask),
       headers: {
         'Content-Type': 'application/json',
         }
       })
-    newTaskName = "";
-    addTaskFlag = false;
   }
   async function deleteTask(event) {
     let taskid
@@ -192,7 +193,7 @@
   position="top"
   onClearDone={clearDone} />
 <div class="taskcontainer">
-  {#each $taskObj as task}
+  {#each taskObjDup as task}
     {#if checkCond(task) && $activeSection}
       {#if !task.completed || showDone}
         <div

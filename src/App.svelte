@@ -9,11 +9,6 @@
     const json = await response.json();
     toDoObj.update(list=>json)
   });
-  // onMount(async function() {
-  //   const response = await fetch('http://localhost:8000/gettask');
-  //   const json = await response.json();
-  //   taskObj.update(list=>json)
-  // });
 </script>
 
 <style>
